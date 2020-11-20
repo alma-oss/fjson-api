@@ -1,10 +1,10 @@
-RESTRICTION: == netcoreapp3.1
+RESTRICTION: == net50
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    FSharp.Core (4.7.2)
+    FSharp.Core (5.0)
 GIT
   remote: ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git
-     (bf8284e0c914e925d6165512d84bd3f0a16bc1bf)
+     (72c8de214cc51f9ec111339258323eee9f7f6182)
       path: /nuget/
 GROUP Build
 STORAGE: NONE
