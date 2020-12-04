@@ -2,9 +2,11 @@ framework: net5.0
 
 source https://api.nuget.org/v3/index.json
 nuget FSharp.Core
+nuget FSharp.Data ~> 3.0
 
 git ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git master Packages: /nuget/
 # LMC Nuget dependencies:
+nuget Lmc.ErrorHandling ~> 4.0
 
 // [ FAKE GROUP ]
 group Build

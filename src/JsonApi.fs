@@ -13,8 +13,16 @@ type JsonApiRequest<'Attributes> = {
     Data: JsonApiData<'Attributes>
 }
 
+type JsonApiRequestParseError<'InvalidRequestDataError> =
+    | InvalidRequest of exn
+    | InvalidRequestData of 'InvalidRequestDataError
+
 [<RequireQualifiedAccess>]
 module JsonApiRequest =
+    open FSharp.Data
+    open Lmc.ErrorHandling
+    open Lmc.ErrorHandling.Result.Operators
+
     let create dataType data =
         {
             Data = {
@@ -22,6 +30,24 @@ module JsonApiRequest =
                 Attributes = data
             }
         }
+
+    type private RequestSchema = JsonProvider<"src/schema/request.json", SampleIsList=true>
+
+    let parse parseData request = result {
+        try
+            let parsedRequest =
+                request
+                |> RequestSchema.Parse
+
+            let! data =
+                parsedRequest.Data.Attributes.JsonValue
+                |> parseData <@> InvalidRequestData
+
+            return create parsedRequest.Data.Type data
+
+        with e ->
+            return! Error (InvalidRequest e)
+    }
 
 [<RequireQualifiedAccess>]
 module Http =
