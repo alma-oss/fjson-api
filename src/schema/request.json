@@ -1,0 +1,25 @@
+[
+    {
+        "data": {
+            "type": "type",
+            "attributes": {}
+        }
+    },
+    {
+        "data": {
+            "type": "type",
+            "attributes": {
+                "some": "attributes"
+            }
+        }
+    },
+    {
+        "data": {
+            "type": "type",
+            "attributes": {
+                "some": "attributes",
+                "different": "attributes"
+            }
+        }
+    }
+]
