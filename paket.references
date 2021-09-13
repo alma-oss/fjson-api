@@ -1,3 +1,6 @@
 FSharp.Core
 FSharp.Data
+Giraffe
 Lmc.ErrorHandling
+Lmc.State
+Lmc.Tracing
