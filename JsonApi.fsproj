@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Compile Include="src/JsonApi.fs" />
+    <Compile Include="src/Tracing.fs" />
   </ItemGroup>
 
   <Import Project=".paket\Paket.Restore.targets" />
