@@ -2,9 +2,11 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 2.3.0 - 2021-11-01
 - Update dependencies
 
-## 2.2.0 - 2020-12-11
+## 2.2.0 - 2021-09-13
 - Update dependencies
 - Add giraffe extension for tracing (`Lmc.Tracing.Extension.Giraffe`)
 
