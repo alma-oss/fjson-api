@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `Trace.Http.injectToResponse` function
+- Add trace headers to the response on start trace automatically
 
 ## 2.3.0 - 2021-11-01
 - Update dependencies
