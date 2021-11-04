@@ -6,6 +6,7 @@ open Microsoft.AspNetCore.Http
 open Giraffe
 
 open Lmc.Tracing
+open Lmc.Tracing.Extension
 open Lmc.Tracing.CustomTracingScope
 
 type HttpScopedTrace(ctx: HttpContext) =
@@ -29,12 +30,23 @@ module Trace =
 
     [<RequireQualifiedAccess>]
     module Http =
+        open Microsoft.Extensions.Primitives
+
         let active ctx = (new HttpScopedTrace(ctx)).Trace
+
+        let injectToResponse (ctx: HttpContext) = function
+            | Inactive -> ()
+            | trace when not ctx.Response.HasStarted ->
+                Http.inject trace []
+                |> List.iter (fun (key, value) ->
+                    ctx.Response.Headers.Add(key, StringValues(value))
+                )
+            | _ -> ()
 
         let start name (ctx: HttpContext) =
             let trace =
                 name
-                |> Trace.ChildOf.continueOrStartActive (fun () -> ctx |> Extension.Http.extractFromContext |> Trace.ofContextOption)
+                |> Trace.ChildOf.continueOrStartActive (fun () -> ctx |> Http.extractFromContext |> Trace.ofContextOption)
                 |> Trace.addTags [
                     "span.kind", "server"
                     "http.method", ctx.Request.Method
@@ -45,6 +57,7 @@ module Trace =
                             ctx.Request.Path.Value
                             ctx.Request.QueryString.Value
                 ]
+                |> tee (injectToResponse ctx)
 
             let httpTrace = new HttpScopedTrace(ctx)
             httpTrace.Save(trace)
