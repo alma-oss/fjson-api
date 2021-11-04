@@ -57,3 +57,34 @@ module Http =
         | :? System.Net.WebException as webException when webException.Message.Contains "(401) Unauthorized" -> Unauthorized
         | :? System.Net.WebException as webException when webException.Message.Contains "(404) Not Found" -> NotFound
         | e -> Unknown e
+
+//
+// Errors
+//
+
+type JsonApiErrorDto = {
+    Status: string
+    Title: string
+    Detail: string
+}
+
+[<RequireQualifiedAccess>]
+module JsonApiErrorDto =
+    let notFound message =
+        {
+            Status = "404"
+            Title = "Resource Not Found"
+            Detail = message
+        }
+
+type JsonApiErrorResponseData = {
+    Errors: JsonApiErrorDto list
+}
+
+[<RequireQualifiedAccess>]
+module JsonApiErrorResponseData =
+    let ofErrors errors = {
+        Errors = errors
+    }
+
+    let ofError error = ofErrors [ error ]

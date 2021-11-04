@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `JsonApiErrorDto` type and module
+- Add `JsonApiErrorResponseData` type and module
 
 ## 2.4.0 - 2021-11-04
 - Add `Trace.Http.injectToResponse` function
