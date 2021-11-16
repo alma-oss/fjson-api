@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `Http` module with `post` and `get` functions and common types and errors
 
 ## 2.5.0 - 2021-11-04
 - Add `JsonApiErrorDto` type and module

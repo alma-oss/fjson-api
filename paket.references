@@ -2,5 +2,6 @@ FSharp.Core
 FSharp.Data
 Giraffe
 Lmc.ErrorHandling
+Lmc.Serializer
 Lmc.State
 Lmc.Tracing
