@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 2.6.0 - 2021-11-16
 - Add `Http` module with `post` and `get` functions and common types and errors
 
 ## 2.5.0 - 2021-11-04
