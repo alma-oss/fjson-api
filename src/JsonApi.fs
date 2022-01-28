@@ -79,3 +79,24 @@ module JsonApiErrorResponseData =
     }
 
     let ofError error = ofErrors [ error ]
+
+[<RequireQualifiedAccess>]
+module JsonApiResource =
+    /// Resource type should be a plural name in cammel case.
+    /// It can contain a subresource, separated by hyphen.
+    /// Example:
+    ///     type: personAggregates-state
+    type Type = ResourceType of string
+
+    /// Collection name should be a plural name in lowercase with values separated by hyphens.
+    /// Example:
+    ///     type: person-aggregates
+    type Collection = CollectionName of string
+
+    [<RequireQualifiedAccess>]
+    module Type =
+        let value (ResourceType resourceType) = resourceType
+
+    [<RequireQualifiedAccess>]
+    module CollectionName =
+        let value (CollectionName collectionName) = collectionName
