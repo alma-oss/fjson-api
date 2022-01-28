@@ -2,6 +2,9 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `JsonApiResource` module with a base types
+    - `Type`
+    - `Collection`
 
 ## 3.0.0 - 2022-01-05
 - [**BC**] Use net6.0
