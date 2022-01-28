@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 3.1.0 - 2022-01-28
 - Add `JsonApiResource` module with a base types
     - `Type`
     - `Collection`
