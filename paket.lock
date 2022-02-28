@@ -550,7 +550,7 @@ NUGET
     Lmc.State (5.0.0)
       FSharp.Core (>= 6.0.1)
       Lmc.ErrorHandling (>= 6.0)
-    Lmc.Tracing (4.0.0)
+    Lmc.Tracing (5.0.0)
       FSharp.Core (>= 6.0.3)
       FSharp.Data (>= 4.2.7)
       Jaeger (>= 1.0.3)
@@ -561,7 +561,7 @@ NUGET
       Microsoft.Extensions.Logging (>= 6.0)
 GIT
   remote: ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git
-     (33637a61eb8e541cc62d8eaa37e8180a8a876dca)
+     (f67fe7dabfa882a0164d11ce245f01c47a0457d5)
       path: /nuget/
 GROUP Build
 STORAGE: NONE
