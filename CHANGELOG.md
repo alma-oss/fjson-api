@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Update dependencies
 
 ## 3.3.0 - 2022-02-28
 - Update dependencies
