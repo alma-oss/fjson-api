@@ -4,6 +4,7 @@ open System
 open Microsoft.AspNetCore.Http
 open Giraffe
 
+open Lmc.JsonApi
 open Lmc.Tracing
 open Lmc.Tracing.Extension
 open Lmc.Tracing.CustomTracingScope

@@ -39,7 +39,7 @@ let post =
         .Post(fun ctx parser ->
             asyncResult {
                 let postOperationTrace = ctx.HttpContext |> Trace.Http.start "Post Operation"   // start current active trace
-                use __ = "Create resource" |> Trace.ChildOf.start postOperationTrace.Trace      // trace create resource as a child of the active trace
+                use _ = "Create resource" |> Trace.ChildOf.start postOperationTrace.Trace      // trace create resource as a child of the active trace
 
                 // ... create resource ...
 
@@ -55,7 +55,7 @@ let post =
         )
         .AfterCreate(fun ctx resource ->
             let postOperationTrace = Trace.Http.active ctx.HttpContext                  // retrieve current active trace
-            use __ = "After Create" |> Trace.ChildOf.start postOperationTrace.Trace     // trace after persist operation as another child of the active trace
+            use _ = "After Create" |> Trace.ChildOf.start postOperationTrace.Trace     // trace after persist operation as another child of the active trace
 
             // ... persist resource ...
 
@@ -77,10 +77,10 @@ let post =
 
 ### Build
 ```bash
-fake build
+./build.sh
 ```
 
 ### Watch
 ```bash
-fake build target watch
+./build.sh -t watch
 ```

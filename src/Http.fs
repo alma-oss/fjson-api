@@ -77,7 +77,7 @@ module Http =
 
         result
         |> AsyncResult.mapError (fun (trace, error) ->
-            use __ =
+            use _ =
                 let statusCode =
                     match error, error.Message with
                     | Unauthorized, _ -> "401"
@@ -94,7 +94,7 @@ module Http =
             | e -> e |> apiError
         )
         |> AsyncResult.bind (fun (trace, response) ->
-            use __ = trace |> Trace.addTags [ "http.status_code", string response.StatusCode ]
+            use _ = trace |> Trace.addTags [ "http.status_code", string response.StatusCode ]
 
             match response.Body with
             | Text text -> AsyncResult.ofSuccess text
