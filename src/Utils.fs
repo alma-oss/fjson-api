@@ -1,4 +1,4 @@
-namespace Lmc.Tracing.Extension
+namespace Lmc.JsonApi
 
 [<AutoOpen>]
 module internal Utils =

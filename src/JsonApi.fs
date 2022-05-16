@@ -23,7 +23,7 @@ module JsonApiRequest =
     open Lmc.ErrorHandling
     open Lmc.ErrorHandling.Result.Operators
 
-    let create dataType data =
+    let create (dataType: string) (data: 'Attributes) =
         {
             Data = {
                 Type = dataType
@@ -33,7 +33,7 @@ module JsonApiRequest =
 
     type private RequestSchema = JsonProvider<"src/schema/request.json", SampleIsList=true>
 
-    let parse parseData request = result {
+    let parse (parseData: JsonValue -> Result<'Attributes, 'InvalidRequestDataError>) (request: string) = result {
         try
             let parsedRequest =
                 request
