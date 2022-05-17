@@ -143,7 +143,7 @@ NUGET
     Lmc.State (5.0.0)
       FSharp.Core (>= 6.0.1)
       Lmc.ErrorHandling (>= 6.0)
-    Lmc.Tracing (6.0.0)
+    Lmc.Tracing (6.2.0)
       FSharp.Core (>= 6.0.4 < 7.0)
       FSharp.Data (>= 4.2.8 < 5.0)
       Lmc.ErrorHandling (>= 6.1 < 7.0)
@@ -158,7 +158,7 @@ NUGET
       OpenTelemetry.Instrumentation.Http (>= 1.0.0-rc9.2)
 GIT
   remote: ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git
-     (26ac5604d6a1ce5e16ff4f25dfb8abc0d3a1d051)
+     (d1cd4af64d15e9b23083185864138bb2e47070df)
       path: /nuget/
 GROUP Build
 STORAGE: NONE
