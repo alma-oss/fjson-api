@@ -10,7 +10,7 @@ git ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git master Packages: /nug
 nuget Lmc.ErrorHandling ~> 6.1
 nuget Lmc.Serializer ~> 3.0
 nuget Lmc.State ~> 5.0
-nuget Lmc.Tracing ~> 6.2
+nuget Lmc.Tracing ~> 6.3
 
 // [ FAKE GROUP ]
 group Build
