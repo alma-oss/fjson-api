@@ -44,6 +44,9 @@ module Trace =
             | _ -> ()
 
         let start name (ctx: HttpContext) =
+            // We want to start a new trace (for request) out of the HttpContext, if there is already an active trace, we need to finish it, so it wont interfere
+            Trace.Active.finish()
+
             let trace =
                 name
                 |> Trace.ChildOf.continueOrStartActive (fun () -> ctx |> Http.extractFromContext |> Trace.ofContextOption)
