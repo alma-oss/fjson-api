@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 4.4.0 - 2022-06-24
 - Add `Http.Conflict` case
 
 ## 4.3.0 - 2022-05-23
