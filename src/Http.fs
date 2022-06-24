@@ -62,11 +62,12 @@ module Http =
             if m.Success then Some (List.tail [ for g in m.Groups -> g.Value ])
             else None
 
-    let (|BadRequest|Unauthorized|NotFound|Unknown|) (e: exn) =
+    let (|BadRequest|Unauthorized|NotFound|Conflict|Unknown|) (e: exn) =
         match e with
         | :? WebException as webException when webException.Message.Contains "(400) Bad Request" -> BadRequest
         | :? WebException as webException when webException.Message.Contains "(401) Unauthorized" -> Unauthorized
         | :? WebException as webException when webException.Message.Contains "(404) Not Found" -> NotFound
+        | :? WebException as webException when webException.Message.Contains "(409) Conflict" -> Conflict
         | e -> Unknown e
 
     let private handleResponse<'Error>
