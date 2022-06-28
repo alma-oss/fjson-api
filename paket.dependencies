@@ -8,9 +8,12 @@ nuget Giraffe ~> 6.0
 git ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git master Packages: /nuget/
 # LMC Nuget dependencies:
 nuget Lmc.ErrorHandling ~> 6.1
-nuget Lmc.Serializer ~> 3.0
+nuget Lmc.Serializer ~> 3.1
 nuget Lmc.State ~> 5.0
-nuget Lmc.Tracing ~> 6.3
+nuget Lmc.Tracing ~> 6.5
+
+nuget Expecto
+nuget YoloDev.Expecto.TestSdk
 
 // [ FAKE GROUP ]
 group Build

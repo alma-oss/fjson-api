@@ -44,6 +44,8 @@ module JsonApiHttpPostError =
 module Http =
     open System
     open System.Net
+    open System.Net.Http
+    open System.Net.Http.Headers
     open FSharp.Data
     open FSharp.Data.HttpRequestHeaders
     open Lmc.JsonApi
@@ -70,11 +72,20 @@ module Http =
         | :? WebException as webException when webException.Message.Contains "(409) Conflict" -> Conflict
         | e -> Unknown e
 
+    type private Response =
+        | HttpResponse of HttpResponse
+        | HttpResponseMessage of HttpResponseMessage
+
+        member this.StatusCode =
+            match this with
+            | HttpResponse response -> string response.StatusCode
+            | HttpResponseMessage response -> response.StatusCode.ToString()
+
     let private handleResponse<'Error>
         (notFoundError: 'Error)
         (apiError: exn -> 'Error)
         (apiErrorMessage: string -> 'Error)
-        (result: AsyncResult<Trace * HttpResponse, Trace * exn>): AsyncResult<string, 'Error> =
+        (result: AsyncResult<Trace * Response, Trace * exn>): AsyncResult<string, 'Error> =
 
         result
         |> AsyncResult.mapError (fun (trace, error) ->
@@ -95,14 +106,18 @@ module Http =
             | e -> e |> apiError
         )
         |> AsyncResult.bind (fun (trace, response) ->
-            use _ = trace |> Trace.addTags [ "http.status_code", string response.StatusCode ]
+            use _ = trace |> Trace.addTags [ "http.status_code", response.StatusCode ]
 
-            match response.Body with
-            | Text text -> AsyncResult.ofSuccess text
-            | Binary binary ->
+            match response with
+            | HttpResponse { Body = Text text } -> AsyncResult.ofSuccess text
+            | HttpResponse { Body = Binary binary } ->
                 sprintf "Expecting text, but got a binary response (%d bytes)" binary.Length
                 |> apiErrorMessage
                 |> AsyncResult.ofError
+
+            | HttpResponseMessage response ->
+                response.Content.ReadAsStringAsync()
+                |> AsyncResult.ofTaskCatch (sprintf "%A" >> apiErrorMessage)
         )
 
     let get (path: Path) (api: Api): AsyncResult<string, JsonApiHttpGetError> =
@@ -132,7 +147,7 @@ module Http =
                 )
                 |> AsyncResult.ofAsyncCatch (fun e -> trace, e)
 
-            return trace, response
+            return trace, HttpResponse response
         }
         |> handleResponse
             JsonApiHttpGetError.NotFound
@@ -156,23 +171,29 @@ module Http =
             let requestBody =
                 request
                 |> Serialize.toJson
-                |> TextRequest
+
+            use client = new HttpClient()
+            client
+                .DefaultRequestHeaders
+                .Accept
+                .Add(MediaTypeWithQualityHeaderValue(JsonApi.ContentType))
+
+            use requestBodyContent = new StringContent(requestBody, Text.Encoding.UTF8)
+
+            [
+                ContentType JsonApi.ContentType
+            ]
+            |> Http.inject trace
+            |> List.iter (fun (key, value) ->
+                try requestBodyContent.Headers.Remove(key) |> ignore with _ -> ()
+                requestBodyContent.Headers.TryAddWithoutValidation(key, value) |> ignore
+            )
 
             let! response =
-                Http.AsyncRequest (
-                    url,
-                    headers = (
-                        [
-                            Accept JsonApi.ContentType
-                            ContentType JsonApi.ContentType
-                        ]
-                        |> Http.inject trace
-                    ),
-                    body = requestBody
-                )
-                |> AsyncResult.ofAsyncCatch (fun e -> trace, e)
+                client.PostAsync(url, requestBodyContent)
+                |> AsyncResult.ofTaskCatch (fun e -> trace, e)
 
-            return trace, response
+            return trace, HttpResponseMessage response
         }
         |> handleResponse
             JsonApiHttpPostError.NotFound
