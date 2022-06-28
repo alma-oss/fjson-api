@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 4.5.0 - 2022-06-28
 - Update dependencies
 - Fix `Http.post` request body encoding
 
