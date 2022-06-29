@@ -2,6 +2,18 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `ResponseError` type and module
+- Unify `JsonApiHttpError`
+    - Add `JsonApiHttpError` type and module
+    - [**BC**] Remove type and module for
+        - `JsonApiHttpGetError`
+        - `JsonApiHttpPostError`
+- Internally use ASP.net core for handling both `Http.get` and `Http.post` instead of `FSharp.Data`
+- Add `JsonApiErrorDto` functions
+    - `JsonApiErrorDto.badRequest`
+    - `JsonApiErrorDto.conflict`
+- Add `HttpStatusCode` module
+- [**BC**] Remove `Http.{Error}` match in favor of better ResponseError type and `HttpStatusCode.parseExn` function
 
 ## 4.5.0 - 2022-06-28
 - Update dependencies
