@@ -47,7 +47,7 @@ type JsonApiText = {
 [<Tests>]
 let encodingTest =
     testList "JsonApi - encoding" [
-        testCase "request body from GET" <| fun _ ->
+        testCase "request body from POST" <| fun _ ->
             let textValue =
                 [
                     "<h2>1. Úvodní ustanovení</h2>"
@@ -58,9 +58,7 @@ let encodingTest =
                 ]
                 |> String.concat ""
 
-            use cancellationTokenSource = new CancellationTokenSource()
-
-            WebServer.start 9990 {
+            use webServer = WebServer.start 9990 {
                 Get = []
                 Post = [
                     route "/post"
@@ -75,25 +73,21 @@ let encodingTest =
                         )
                 ]
             }
-            |> fun aX -> Async.Start(aX, cancellationTokenSource.Token)
+            webServer.Run()
 
             let post: Path = fun (Api api) -> Url $"{api}/post"
-            let api: Api = Api "http://localhost:9990"
 
-            let _response =
+            let response =
                 {
                     Value = textValue
                     Language = "cs"
                 }
                 |> JsonApiRequest.create "text"
                 // |> tee (printfn "Request:\n%A")
-                |> Http.post post api
+                |> Http.post post webServer.Api
                 |> Async.RunSynchronously
-                |> okOrFail
 
-            cancellationTokenSource.Cancel()
-
-            // printfn "Response:\n%A" response
+            Expect.isOk response "Response should be ok for 2xx"
 
         testCase "response from GET" <| fun _ ->
             let textValue =
@@ -106,9 +100,7 @@ let encodingTest =
                 ]
                 |> String.concat ""
 
-            use cancellationTokenSource = new CancellationTokenSource()
-
-            WebServer.start 9991 {
+            use webServer = WebServer.start 9991 {
                 Get = [
                     route "/get"
                         >=> json {
@@ -118,17 +110,14 @@ let encodingTest =
                 ]
                 Post = []
             }
-            |> fun aX -> Async.Start(aX, cancellationTokenSource.Token)
+            webServer.Run()
 
             let get: Path = fun (Api api) -> Url $"{api}/get"
-            let api: Api = Api "http://localhost:9991"
 
             let response =
-                Http.get get api
+                Http.get get webServer.Api
                 |> Async.RunSynchronously
                 |> okOrFail
-
-            cancellationTokenSource.Cancel()
 
             let responseText = response |> Text.parse
 

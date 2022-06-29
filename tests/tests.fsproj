@@ -18,6 +18,7 @@
     <Compile Include="WebServer.fs" />
 
     <Compile Include="Encoding.fs" />
+    <Compile Include="ResponseHandling.fs" />
     <Compile Include="Tests.fs" />
   </ItemGroup>
 

@@ -61,10 +61,24 @@ type JsonApiErrorDto = {
 
 [<RequireQualifiedAccess>]
 module JsonApiErrorDto =
+    let badRequest message =
+        {
+            Status = "400"
+            Title = "Bad Request"
+            Detail = message
+        }
+
     let notFound message =
         {
             Status = "404"
             Title = "Resource Not Found"
+            Detail = message
+        }
+
+    let conflict message =
+        {
+            Status = "409"
+            Title = "Conflict"
             Detail = message
         }
 

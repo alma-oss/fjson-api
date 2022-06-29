@@ -16,14 +16,40 @@ open Microsoft.Extensions.DependencyInjection
 open Giraffe
 
 open Lmc.ErrorHandling
+open Lmc.JsonApi
 
 type Handlers = {
     Get: HttpHandler list
     Post: HttpHandler list
 }
 
+type WebServer =
+    {
+        Api: Api
+        WebServer: Async<unit>
+        Cancellation: CancellationTokenSource
+    }
+
+    member this.Run() =
+        Async.Start(this.WebServer, this.Cancellation.Token)
+
+    interface IDisposable with
+        member this.Dispose() =
+            this.Cancellation.Dispose()
+
 [<RequireQualifiedAccess>]
 module WebServer =
+    /// See https://github.com/giraffe-fsharp/Giraffe/blob/master/DOCUMENTATION.md#content-negotiation
+    type private CustomNegotiationConfig (baseConfig : INegotiationConfig) =
+        interface INegotiationConfig with
+            member __.UnacceptableHandler =
+                baseConfig.UnacceptableHandler
+
+            member __.Rules =
+                dict [
+                    JsonApi.ContentType, (fun response -> json response >=> setHttpHeader "Content-Type" JsonApi.ContentType)
+                ]
+
     let private configureApp webApp (app: IApplicationBuilder) =
         app
             .UseGiraffe webApp
@@ -31,9 +57,12 @@ module WebServer =
     let private configureServices (services: IServiceCollection) =
         services
             .AddGiraffe()
+            .AddSingleton<INegotiationConfig>(
+                CustomNegotiationConfig(DefaultNegotiationConfig())
+            )
         |> ignore
 
-    let start port handlers =
+    let start (port: int) handlers =
         let webApp =
             choose [
                 match handlers with
@@ -45,15 +74,22 @@ module WebServer =
                 | { Get = handlers } -> GET >=> choose handlers
             ]
 
-        Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(
-                fun webHostBuilder ->
-                    webHostBuilder
-                        .Configure(configureApp webApp)
-                        .ConfigureServices(configureServices)
-                        .UseUrls($"http://localhost:{port}")
-                    |> ignore
-            )
-            .Build()
-            .RunAsync()
-        |> Async.AwaitTask
+        let webServer =
+            Host.CreateDefaultBuilder()
+                .ConfigureWebHostDefaults(
+                    fun webHostBuilder ->
+                        webHostBuilder
+                            .Configure(configureApp webApp)
+                            .ConfigureServices(configureServices)
+                            .UseUrls($"http://localhost:{port}")
+                        |> ignore
+                )
+                .Build()
+                .RunAsync()
+            |> Async.AwaitTask
+
+        {
+            Api = Api $"http://localhost:{port}"
+            WebServer = webServer
+            Cancellation = new CancellationTokenSource()
+        }

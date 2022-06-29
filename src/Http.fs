@@ -1,5 +1,17 @@
 namespace Lmc.JsonApi
 
+open System
+open System.Net
+open System.Net.Http
+open System.Net.Http.Headers
+open FSharp.Data.HttpRequestHeaders
+
+open Lmc.JsonApi
+open Lmc.Serializer
+open Lmc.ErrorHandling
+open Lmc.Tracing
+open Lmc.Tracing.Extension
+
 //
 // Common types
 //
@@ -8,119 +20,167 @@ type Url = Url of string
 type Api = Api of string
 type Path = Api -> Url
 
+[<RequireQualifiedAccess>]
+module Url =
+    let asUri (Url url) = Uri url
+
 //
 // Errors
 //
 
+type Method =
+    | Get
+    | Post of string
+    | Unsupported of HttpMethod
+
+type ResponseError = {
+    Uri: Uri
+    StatusCode: HttpStatusCode
+    Request: Method
+    Response: string
+    ResponseMessage: HttpResponseMessage
+}
+
 [<RequireQualifiedAccess>]
-type JsonApiHttpGetError =
+module HttpStatusCode =
+    let parseExn (e: exn) =
+        match e with
+        | :? WebException as webException when webException.Message.Contains "(400) Bad Request" -> Some HttpStatusCode.BadRequest
+        | :? WebException as webException when webException.Message.Contains "(401) Unauthorized" -> Some HttpStatusCode.Unauthorized
+        | :? WebException as webException when webException.Message.Contains "(403) Forbidden" -> Some HttpStatusCode.Forbidden
+        | :? WebException as webException when webException.Message.Contains "(404) Not Found" -> Some HttpStatusCode.NotFound
+        | :? WebException as webException when webException.Message.Contains "(406) Not Acceptable" -> Some HttpStatusCode.NotAcceptable
+        | :? WebException as webException when webException.Message.Contains "(408) Request Timeout" -> Some HttpStatusCode.RequestTimeout
+        | :? WebException as webException when webException.Message.Contains "(409) Conflict" -> Some HttpStatusCode.Conflict
+        | :? WebException as webException when webException.Message.Contains "(422) Unprocessable Entity" -> Some HttpStatusCode.UnprocessableEntity
+        | _ -> None
+
+    let asInt (statusCode: HttpStatusCode) =
+        int statusCode
+
+    let asString = asInt >> string
+
+    let isError = asInt >> fun code -> code >= 400
+
+[<RequireQualifiedAccess>]
+module internal HttpContent =
+    let asString (content: HttpContent) = asyncResult {
+        return! content.ReadAsStringAsync()
+    }
+
+[<RequireQualifiedAccess>]
+module internal HttpClient =
+    let jsonApiClient () =
+        let client = new HttpClient()
+        client
+            .DefaultRequestHeaders
+            .Accept
+            .Add(MediaTypeWithQualityHeaderValue(JsonApi.ContentType))
+
+        client
+
+[<RequireQualifiedAccess>]
+module ResponseError =
+    let internal fromResponse (response: HttpResponseMessage) = asyncResult {
+        let! responseString = response.Content |> HttpContent.asString
+
+        let! method =
+            match response.RequestMessage.Method with
+            | get when get = HttpMethod.Get -> AsyncResult.ofSuccess Get
+            | post when post = HttpMethod.Post ->
+                response.RequestMessage.Content
+                |> HttpContent.asString
+                |> AsyncResult.map Post
+            | unsupported -> AsyncResult.ofSuccess (Unsupported unsupported)
+
+        return {
+            Uri = response.RequestMessage.RequestUri
+            StatusCode = response.StatusCode
+            Request = method
+            Response = responseString
+            ResponseMessage = response
+        }
+    }
+
+    let response { ResponseMessage = response } = response
+    let format: ResponseError -> string = sprintf "%A"
+
+    let requestUri { Uri = uri } = uri
+    let statusCode { StatusCode = code } = code
+
+    let requestContent = function
+        | { Request = Post request } -> Some request
+        | { Request = _ } -> None
+
+    let responseContent { Response = response } = response
+
+[<RequireQualifiedAccess>]
+type JsonApiHttpError =
+    /// Generic Api Error exception
     | ApiError of exn
+    /// Generic Api Error message
     | ApiErrorMessage of string
-    | NotFound
+    /// Specific 4xx or 5xx response error
+    | ResponseError of ResponseError
+    /// Api handles the request but there is an error with the Response
+    | GenericResponseError of exn
 
 [<RequireQualifiedAccess>]
-module JsonApiHttpGetError =
+module JsonApiHttpError =
     let format = function
-        | JsonApiHttpGetError.ApiError e -> sprintf "Error: %A" e
-        | JsonApiHttpGetError.ApiErrorMessage e -> sprintf "Error: %A" e
-        | JsonApiHttpGetError.NotFound -> sprintf "Resource was not found."
+        | JsonApiHttpError.ApiError e -> sprintf "Error: %A" e
+        | JsonApiHttpError.ApiErrorMessage e -> sprintf "Error: %A" e
+        | JsonApiHttpError.ResponseError e -> e |> ResponseError.format
+        | JsonApiHttpError.GenericResponseError e -> sprintf "Request was handled but there is a problem with the response: %A" e
 
-[<RequireQualifiedAccess>]
-type JsonApiHttpPostError =
-    | ApiError of exn
-    | ApiErrorMessage of string
-    | NotFound
-    | ResponseError of exn
-
-[<RequireQualifiedAccess>]
-module JsonApiHttpPostError =
-    let format = function
-        | JsonApiHttpPostError.ApiError e -> sprintf "Error: %A" e
-        | JsonApiHttpPostError.ApiErrorMessage e -> sprintf "Error: %A" e
-        | JsonApiHttpPostError.NotFound -> sprintf "Resource not found."
-        | JsonApiHttpPostError.ResponseError e -> sprintf "Response ends with error.\nError: %A" e
+    let internal statusCode = function
+        | JsonApiHttpError.ResponseError e -> e |> ResponseError.statusCode |> Some
+        | _ -> None
 
 [<RequireQualifiedAccess>]
 module Http =
-    open System
-    open System.Net
-    open System.Net.Http
-    open System.Net.Http.Headers
-    open FSharp.Data
-    open FSharp.Data.HttpRequestHeaders
-    open Lmc.JsonApi
-    open Lmc.Serializer
-    open Lmc.ErrorHandling
-    open Lmc.Tracing
-    open Lmc.Tracing.Extension
+    let private handleResponseTracedError (trace, error) =
+        use trace = trace |> Trace.addError (TracedError.ofError JsonApiHttpError.format error)
 
-    [<AutoOpen>]
-    module internal Utils =
-        open System.Text.RegularExpressions
+        error
+        |> JsonApiHttpError.statusCode
+        |> Option.iter (fun statusCode ->
+            trace
+            |> Trace.addTags [ "http.status_code", statusCode |> HttpStatusCode.asString ]
+            |> ignore
+        )
 
-        // http://www.fssnip.net/29/title/Regular-expression-active-pattern
-        let (|Regex|_|) pattern input =
-            let m = Regex.Match(input, pattern)
-            if m.Success then Some (List.tail [ for g in m.Groups -> g.Value ])
-            else None
+        error
 
-    let (|BadRequest|Unauthorized|NotFound|Conflict|Unknown|) (e: exn) =
-        match e with
-        | :? WebException as webException when webException.Message.Contains "(400) Bad Request" -> BadRequest
-        | :? WebException as webException when webException.Message.Contains "(401) Unauthorized" -> Unauthorized
-        | :? WebException as webException when webException.Message.Contains "(404) Not Found" -> NotFound
-        | :? WebException as webException when webException.Message.Contains "(409) Conflict" -> Conflict
-        | e -> Unknown e
+    let private handleResponseTracedSuccess (trace, response: HttpResponseMessage) =
+        use trace = trace |> Trace.addTags [ "http.status_code", response.StatusCode |> HttpStatusCode.asString ]
 
-    type private Response =
-        | HttpResponse of HttpResponse
-        | HttpResponseMessage of HttpResponseMessage
+        response.Content
+        |> HttpContent.asString
+        |> AsyncResult.mapError (fun e ->
+            trace
+            |> Trace.addError (TracedError.ofExn e)
+            |> ignore
 
-        member this.StatusCode =
-            match this with
-            | HttpResponse response -> string response.StatusCode
-            | HttpResponseMessage response -> response.StatusCode.ToString()
+            JsonApiHttpError.ApiError e
+        )
 
-    let private handleResponse<'Error>
-        (notFoundError: 'Error)
-        (apiError: exn -> 'Error)
-        (apiErrorMessage: string -> 'Error)
-        (result: AsyncResult<Trace * Response, Trace * exn>): AsyncResult<string, 'Error> =
-
+    let private handleResponse (result: AsyncResult<Trace * HttpResponseMessage, Trace * JsonApiHttpError>): AsyncResult<string, JsonApiHttpError> =
         result
-        |> AsyncResult.mapError (fun (trace, error) ->
-            use _ =
-                let statusCode =
-                    match error, error.Message with
-                    | Unauthorized, _ -> "401"
-                    | NotFound, _ -> "404"
-                    | _, Regex "^\((\d{3})\)" [ statusCode ] -> statusCode
-                    | _ -> "400"
+        |> AsyncResult.mapError handleResponseTracedError
+        |> AsyncResult.bind handleResponseTracedSuccess
 
-                trace
-                |> Trace.addTags [ "http.status_code", statusCode ]
-                |> Trace.addError (TracedError.ofExn error)
+    let private assertSuccessfulResponse (response: HttpResponseMessage): AsyncResult<unit, JsonApiHttpError> = asyncResult {
+        if response.StatusCode |> HttpStatusCode.isError then
+            let! responseError =
+                response
+                |> ResponseError.fromResponse
+                |> AsyncResult.mapError JsonApiHttpError.GenericResponseError
 
-            match error with
-            | NotFound -> notFoundError
-            | e -> e |> apiError
-        )
-        |> AsyncResult.bind (fun (trace, response) ->
-            use _ = trace |> Trace.addTags [ "http.status_code", response.StatusCode ]
+            return! AsyncResult.ofError (JsonApiHttpError.ResponseError responseError)
+    }
 
-            match response with
-            | HttpResponse { Body = Text text } -> AsyncResult.ofSuccess text
-            | HttpResponse { Body = Binary binary } ->
-                sprintf "Expecting text, but got a binary response (%d bytes)" binary.Length
-                |> apiErrorMessage
-                |> AsyncResult.ofError
-
-            | HttpResponseMessage response ->
-                response.Content.ReadAsStringAsync()
-                |> AsyncResult.ofTaskCatch (sprintf "%A" >> apiErrorMessage)
-        )
-
-    let get (path: Path) (api: Api): AsyncResult<string, JsonApiHttpGetError> =
+    let get (path: Path) (api: Api): AsyncResult<string, JsonApiHttpError> =
         asyncResult {
             let trace =
                 "[JsonApi] Get response"
@@ -134,27 +194,26 @@ module Http =
             let (Url url) = api |> path
             let trace = trace |> Trace.addTags [ "http.url", url ]
 
-            let! response =
-                Http.AsyncRequest (
-                    url,
-                    httpMethod = "GET",
-                    headers = (
-                        [
-                            Accept JsonApi.ContentType
-                        ]
-                        |> Http.inject trace
-                    )
-                )
-                |> AsyncResult.ofAsyncCatch (fun e -> trace, e)
+            use client = HttpClient.jsonApiClient ()
 
-            return trace, HttpResponse response
+            []
+            |> Http.inject trace
+            |> List.iter (fun (key, value) ->
+                client.DefaultRequestHeaders.TryAddWithoutValidation(key, value) |> ignore
+            )
+            let tracedError error = trace, error
+
+            let! (response: HttpResponseMessage) =
+                client.GetAsync(url)
+                |> AsyncResult.ofTaskCatch (JsonApiHttpError.ApiError >> tracedError)
+
+            do! assertSuccessfulResponse response |> AsyncResult.mapError tracedError
+
+            return trace, response
         }
         |> handleResponse
-            JsonApiHttpGetError.NotFound
-            JsonApiHttpGetError.ApiError
-            JsonApiHttpGetError.ApiErrorMessage
 
-    let post<'Request> (path: Path) (api: Api) (request: JsonApiRequest<'Request>): AsyncResult<string, JsonApiHttpPostError> =
+    let post<'Request> (path: Path) (api: Api) (request: JsonApiRequest<'Request>): AsyncResult<string, JsonApiHttpError> =
         asyncResult {
             let trace =
                 "[JsonApi] Post response"
@@ -172,12 +231,7 @@ module Http =
                 request
                 |> Serialize.toJson
 
-            use client = new HttpClient()
-            client
-                .DefaultRequestHeaders
-                .Accept
-                .Add(MediaTypeWithQualityHeaderValue(JsonApi.ContentType))
-
+            use client = HttpClient.jsonApiClient ()
             use requestBodyContent = new StringContent(requestBody, Text.Encoding.UTF8)
 
             [
@@ -188,14 +242,14 @@ module Http =
                 try requestBodyContent.Headers.Remove(key) |> ignore with _ -> ()
                 requestBodyContent.Headers.TryAddWithoutValidation(key, value) |> ignore
             )
+            let tracedError error = trace, error
 
-            let! response =
+            let! (response: HttpResponseMessage) =
                 client.PostAsync(url, requestBodyContent)
-                |> AsyncResult.ofTaskCatch (fun e -> trace, e)
+                |> AsyncResult.ofTaskCatch (JsonApiHttpError.ApiError >> tracedError)
 
-            return trace, HttpResponseMessage response
+            do! assertSuccessfulResponse response |> AsyncResult.mapError tracedError
+
+            return trace, response
         }
         |> handleResponse
-            JsonApiHttpPostError.NotFound
-            JsonApiHttpPostError.ApiError
-            JsonApiHttpPostError.ApiErrorMessage
