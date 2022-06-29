@@ -2,6 +2,8 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+
+## 5.0.0 - 2022-06-29
 - Add `ResponseError` type and module
 - Unify `JsonApiHttpError`
     - Add `JsonApiHttpError` type and module
