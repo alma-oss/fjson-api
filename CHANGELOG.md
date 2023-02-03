@@ -3,6 +3,7 @@
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
 - Update dependencies
+- Add `Path.id` function
 
 ## 5.0.0 - 2022-06-29
 - Add `ResponseError` type and module

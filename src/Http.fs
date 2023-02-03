@@ -24,6 +24,11 @@ type Path = Api -> Url
 module Url =
     let asUri (Url url) = Uri url
 
+[<RequireQualifiedAccess>]
+module Path =
+    /// Identity path - it will use the given Api as is for the URL
+    let id: Path = fun (Api api) -> Url api
+
 //
 // Errors
 //
