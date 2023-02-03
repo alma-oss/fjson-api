@@ -4,7 +4,7 @@ NUGET
     Expecto (9.0.4)
       FSharp.Core (>= 4.6)
       Mono.Cecil (>= 0.11.3)
-    FSharp.Core (6.0.5)
+    FSharp.Core (6.0.7)
     FSharp.Data (4.2.9)
       FSharp.Core (>= 5.0.1)
     Giraffe (6.0)
@@ -132,7 +132,7 @@ NUGET
       FSharp.Core (>= 4.6.2)
       System.Collections.Immutable (>= 6.0)
   remote: paket-files/git_bitbucket.lmc.cz7999/archi/nuget-server/nuget
-    Lmc.ErrorHandling (6.1.0)
+    Lmc.ErrorHandling (6.2.0)
       FSharp.Core (>= 6.0.3)
     Lmc.Logging (6.0.0)
       FSharp.Core (>= 6.0.1)
@@ -144,7 +144,7 @@ NUGET
       Serilog (>= 2.10)
       Serilog.Extensions.Logging (>= 3.1)
       Serilog.Sinks.Console (>= 4.0.1)
-    Lmc.Serializer (3.1.0)
+    Lmc.Serializer (3.2.0)
       FSharp.Core (>= 6.0.4 < 7.0)
       Newtonsoft.Json (>= 13.0.1 < 14.0)
     Lmc.ServiceIdentification (6.0.0)
@@ -167,7 +167,7 @@ NUGET
       OpenTelemetry.Instrumentation.Http (>= 1.0.0-rc9.2)
 GIT
   remote: ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git
-     (5599e4bc51bb64fc95e5d484e4da14dc9d643792)
+     (51561de6e21ef61c151fe08cd805a1bcc5a5aa55)
       path: /nuget/
 GROUP Build
 STORAGE: NONE
