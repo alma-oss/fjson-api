@@ -1,4 +1,4 @@
-namespace Lmc.JsonApi
+namespace Alma.JsonApi
 
 open System
 open System.Net
@@ -6,11 +6,11 @@ open System.Net.Http
 open System.Net.Http.Headers
 open FSharp.Data.HttpRequestHeaders
 
-open Lmc.JsonApi
-open Lmc.Serializer
-open Lmc.ErrorHandling
-open Lmc.Tracing
-open Lmc.Tracing.Extension
+open Alma.JsonApi
+open Alma.Serializer
+open Alma.ErrorHandling
+open Alma.Tracing
+open Alma.Tracing.Extension
 
 //
 // Common types

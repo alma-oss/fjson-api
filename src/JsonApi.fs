@@ -1,4 +1,4 @@
-namespace Lmc.JsonApi
+namespace Alma.JsonApi
 
 [<RequireQualifiedAccess>]
 module JsonApi =
@@ -20,8 +20,8 @@ type JsonApiRequestParseError<'InvalidRequestDataError> =
 [<RequireQualifiedAccess>]
 module JsonApiRequest =
     open FSharp.Data
-    open Lmc.ErrorHandling
-    open Lmc.ErrorHandling.Result.Operators
+    open Alma.ErrorHandling
+    open Alma.ErrorHandling.Result.Operators
 
     let create (dataType: string) (data: 'Attributes) =
         {

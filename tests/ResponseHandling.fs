@@ -6,8 +6,8 @@ open Expecto
 open Microsoft.AspNetCore.Http
 open Giraffe
 
-open Lmc.ErrorHandling
-open Lmc.JsonApi
+open Alma.ErrorHandling
+open Alma.JsonApi
 
 open JsonApi.TestUtils
 open System.Net

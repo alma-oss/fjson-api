@@ -15,8 +15,8 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
 
-open Lmc.ErrorHandling
-open Lmc.JsonApi
+open Alma.ErrorHandling
+open Alma.JsonApi
 
 type Handlers = {
     Get: HttpHandler list
