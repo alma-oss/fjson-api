@@ -7,14 +7,20 @@ Json Api types and basic implementations.
 
 Add following into `paket.dependencies`
 ```
-git ssh://git@bitbucket.lmc.cz:7999/archi/nuget-server.git master Packages: /nuget/
+source https://nuget.pkg.github.com/almacareer/index.json username: "%PRIVATE_FEED_USER%" password: "%PRIVATE_FEED_PASS%"
 # LMC Nuget dependencies:
-nuget Lmc.JsonApi
+nuget Alma.JsonApi
+```
+
+NOTE: For local development, you have to create ENV variables with your github personal access token.
+```sh
+export PRIVATE_FEED_USER='{GITHUB USERNANME}'
+export PRIVATE_FEED_PASS='{TOKEN}'	# with permissions: read:packages
 ```
 
 Add following into `paket.references`
 ```
-Lmc.JsonApi
+Alma.JsonApi
 ```
 
 ## Use
@@ -67,20 +73,17 @@ let post =
 1. Increment version in `JsonApi.fsproj`
 2. Update `CHANGELOG.md`
 3. Commit new version and tag it
-4. Run `$ fake build target release`
-5. Go to `nuget-server` repo, run `faket build target copyAll` and push new versions
 
 ## Development
 ### Requirements
 - [dotnet core](https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial)
-- [FAKE](https://fake.build/fake-gettingstarted.html)
 
 ### Build
 ```bash
-./build.sh
+./build.sh build
 ```
 
-### Watch
+### Tests
 ```bash
-./build.sh -t watch
+./build.sh -t tests
 ```

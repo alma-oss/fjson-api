@@ -1,13 +1,13 @@
-namespace Lmc.Tracing.Extension.Giraffe
+namespace Alma.Tracing.Extension.Giraffe
 
 open System
 open Microsoft.AspNetCore.Http
 open Giraffe
 
-open Lmc.JsonApi
-open Lmc.Tracing
-open Lmc.Tracing.Extension
-open Lmc.Tracing.CustomTracingScope
+open Alma.JsonApi
+open Alma.Tracing
+open Alma.Tracing.Extension
+open Alma.Tracing.CustomTracingScope
 
 type HttpScopedTrace(ctx: HttpContext) =
     inherit ScopedTrace(TraceIdentifier ctx.TraceIdentifier)

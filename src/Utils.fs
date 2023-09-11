@@ -1,4 +1,4 @@
-namespace Lmc.JsonApi
+namespace Alma.JsonApi
 
 [<AutoOpen>]
 module internal Utils =

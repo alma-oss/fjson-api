@@ -5,8 +5,8 @@ open System.Threading
 open Expecto
 open Giraffe
 
-open Lmc.ErrorHandling
-open Lmc.JsonApi
+open Alma.ErrorHandling
+open Alma.JsonApi
 
 open JsonApi.TestUtils
 

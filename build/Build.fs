@@ -1,5 +1,5 @@
 // ========================================================================================================
-// === F# / Project fake build ==================================================================== 1.0.0 =
+// === F# / Project fake build ==================================================================== 1.1.0 =
 // --------------------------------------------------------------------------------------------------------
 // Options:
 //  - no-clean   - disables clean of dirs in the first step (required on CI)
@@ -19,7 +19,7 @@ let main args =
 
     Targets.init {
         Project = {
-            Name = "JsonApi"
+            Name = "Alma.JsonApi"
             Summary = "Json Api types and basic implementations."
             Git = Git.init ()
         }
