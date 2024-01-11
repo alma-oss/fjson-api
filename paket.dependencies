@@ -14,7 +14,7 @@ source https://nuget.pkg.github.com/almacareer/index.json username: "%PRIVATE_FE
 nuget Alma.ErrorHandling ~> 9.0
 nuget Alma.Serializer ~> 6.0
 nuget Alma.State ~> 8.0
-nuget Alma.Tracing ~> 9.0
+nuget Alma.Tracing ~> 10.0
 
 nuget Expecto
 nuget YoloDev.Expecto.TestSdk
