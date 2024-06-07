@@ -185,7 +185,7 @@ module Http =
             return! AsyncResult.ofError (JsonApiHttpError.ResponseError responseError)
     }
 
-    let get (path: Path) (api: Api): AsyncResult<string, JsonApiHttpError> =
+    let getWithHeaders (path: Path) (api: Api) headers: AsyncResult<string, JsonApiHttpError> =
         asyncResult {
             let trace =
                 "[JsonApi] Get response"
@@ -201,7 +201,7 @@ module Http =
 
             use client = HttpClient.jsonApiClient ()
 
-            []
+            headers
             |> Http.inject trace
             |> List.iter (fun (key, value) ->
                 client.DefaultRequestHeaders.TryAddWithoutValidation(key, value) |> ignore
@@ -218,7 +218,10 @@ module Http =
         }
         |> handleResponse
 
-    let post<'Request> (path: Path) (api: Api) (request: JsonApiRequest<'Request>): AsyncResult<string, JsonApiHttpError> =
+    let get (path: Path) (api: Api): AsyncResult<string, JsonApiHttpError> =
+        getWithHeaders path api []
+
+    let postWithHeaders<'Request> (path: Path) (api: Api) headers (request: JsonApiRequest<'Request>): AsyncResult<string, JsonApiHttpError> =
         asyncResult {
             let trace =
                 "[JsonApi] Post response"
@@ -239,9 +242,7 @@ module Http =
             use client = HttpClient.jsonApiClient ()
             use requestBodyContent = new StringContent(requestBody, Text.Encoding.UTF8)
 
-            [
-                ContentType JsonApi.ContentType
-            ]
+            ContentType JsonApi.ContentType :: headers
             |> Http.inject trace
             |> List.iter (fun (key, value) ->
                 try requestBodyContent.Headers.Remove(key) |> ignore with _ -> ()
@@ -258,3 +259,6 @@ module Http =
             return trace, response
         }
         |> handleResponse
+
+    let post<'Request> path api (request: JsonApiRequest<'Request>): AsyncResult<string, JsonApiHttpError> =
+        postWithHeaders path api [] request

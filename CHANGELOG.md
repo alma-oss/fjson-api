@@ -2,6 +2,9 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Add `Http` functions
+    - `getWithHeaders`
+    - `postWithHeaders`
 
 ## 8.1.0 - 2024-01-11
 - Update dependencies
