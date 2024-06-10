@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Inject headers to client as well
 
 ## 8.2.0 - 2024-06-07
 - Add `Http` functions
