@@ -75,12 +75,17 @@ module internal HttpContent =
 
 [<RequireQualifiedAccess>]
 module internal HttpClient =
-    let jsonApiClient () =
+    let jsonApiClient (headers: (string * string) list) =
         let client = new HttpClient()
         client
             .DefaultRequestHeaders
             .Accept
             .Add(MediaTypeWithQualityHeaderValue(JsonApi.ContentType))
+
+        headers
+        |> List.iter (fun (key, value) ->
+            client.DefaultRequestHeaders.TryAddWithoutValidation(key, value) |> ignore
+        )
 
         client
 
@@ -199,7 +204,7 @@ module Http =
             let (Url url) = api |> path
             let trace = trace |> Trace.addTags [ "http.url", url ]
 
-            use client = HttpClient.jsonApiClient ()
+            use client = HttpClient.jsonApiClient headers
 
             headers
             |> Http.inject trace
@@ -239,7 +244,7 @@ module Http =
                 request
                 |> Serialize.toJson
 
-            use client = HttpClient.jsonApiClient ()
+            use client = HttpClient.jsonApiClient headers
             use requestBodyContent = new StringContent(requestBody, Text.Encoding.UTF8)
 
             ContentType JsonApi.ContentType :: headers
