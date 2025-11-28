@@ -5,7 +5,7 @@ open System.Threading
 open Expecto
 open Giraffe
 
-open Alma.ErrorHandling
+open Feather.ErrorHandling
 open Alma.JsonApi
 
 open JsonApi.TestUtils

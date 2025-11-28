@@ -6,7 +6,7 @@ open Expecto
 open Microsoft.AspNetCore.Http
 open Giraffe
 
-open Alma.ErrorHandling
+open Feather.ErrorHandling
 open Alma.JsonApi
 
 open JsonApi.TestUtils

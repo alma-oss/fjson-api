@@ -15,7 +15,7 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
 
-open Alma.ErrorHandling
+open Feather.ErrorHandling
 open Alma.JsonApi
 
 type Handlers = {

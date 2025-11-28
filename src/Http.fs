@@ -8,7 +8,7 @@ open FSharp.Data.HttpRequestHeaders
 
 open Alma.JsonApi
 open Alma.Serializer
-open Alma.ErrorHandling
+open Feather.ErrorHandling
 open Alma.Tracing
 open Alma.Tracing.Extension
 
