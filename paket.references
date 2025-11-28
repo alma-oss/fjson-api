@@ -1,7 +1,7 @@
 FSharp.Core
 FSharp.Data
 Giraffe
-Alma.ErrorHandling
+Feather.ErrorHandling
 Alma.Serializer
 Alma.State
 Alma.Tracing

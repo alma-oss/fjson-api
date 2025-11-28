@@ -20,8 +20,8 @@ type JsonApiRequestParseError<'InvalidRequestDataError> =
 [<RequireQualifiedAccess>]
 module JsonApiRequest =
     open FSharp.Data
-    open Alma.ErrorHandling
-    open Alma.ErrorHandling.Result.Operators
+    open Feather.ErrorHandling
+    open Feather.ErrorHandling.Result.Operators
 
     let create (dataType: string) (data: 'Attributes) =
         {
