@@ -1,3 +1,5 @@
 {
-    "redundantNewKeyword": { "enabled": false }
+    "genericTypesNames": {
+        "enabled": false
+    }
 }
