@@ -1,0 +1,113 @@
+lockfile_version: '1'
+dependencies: []
+deployments:
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fjson-api
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fjson-api/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:c9fd3166b0d4b3ee37c1090437b75b5cf88f0c6008afc720a014287517272277
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fjson-api/references/anti-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:4feced57ac8601cf6701a0d4488577fec031bd5ef70c53e8d0239a66eb829cf2
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fjson-api/references/examples.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:d541ed9446ebda1786d126aa5584945d3bd8031a2029bd1a87f285adcdd6b5e5
+- kind: project-relative
+  target: claude
+  value: .claude/skills/fjson-api/references/preferred-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:b1ba1a28584dbc8e75108729985057bdda0c5d5df8f33d652d7cc7ac0c416ff6
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fjson-api
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fjson-api/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:c9fd3166b0d4b3ee37c1090437b75b5cf88f0c6008afc720a014287517272277
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fjson-api/references/anti-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:4feced57ac8601cf6701a0d4488577fec031bd5ef70c53e8d0239a66eb829cf2
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fjson-api/references/examples.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:d541ed9446ebda1786d126aa5584945d3bd8031a2029bd1a87f285adcdd6b5e5
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/fjson-api/references/preferred-patterns.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:b1ba1a28584dbc8e75108729985057bdda0c5d5df8f33d652d7cc7ac0c416ff6
+local_deployed_files:
+- .agents/skills/fjson-api
+- .agents/skills/fjson-api/SKILL.md
+- .agents/skills/fjson-api/references/anti-patterns.md
+- .agents/skills/fjson-api/references/examples.md
+- .agents/skills/fjson-api/references/preferred-patterns.md
+- .claude/skills/fjson-api
+- .claude/skills/fjson-api/SKILL.md
+- .claude/skills/fjson-api/references/anti-patterns.md
+- .claude/skills/fjson-api/references/examples.md
+- .claude/skills/fjson-api/references/preferred-patterns.md
+local_deployed_file_hashes:
+  .agents/skills/fjson-api/SKILL.md: sha256:c9fd3166b0d4b3ee37c1090437b75b5cf88f0c6008afc720a014287517272277
+  .agents/skills/fjson-api/references/anti-patterns.md: sha256:4feced57ac8601cf6701a0d4488577fec031bd5ef70c53e8d0239a66eb829cf2
+  .agents/skills/fjson-api/references/examples.md: sha256:d541ed9446ebda1786d126aa5584945d3bd8031a2029bd1a87f285adcdd6b5e5
+  .agents/skills/fjson-api/references/preferred-patterns.md: sha256:b1ba1a28584dbc8e75108729985057bdda0c5d5df8f33d652d7cc7ac0c416ff6
+  .claude/skills/fjson-api/SKILL.md: sha256:c9fd3166b0d4b3ee37c1090437b75b5cf88f0c6008afc720a014287517272277
+  .claude/skills/fjson-api/references/anti-patterns.md: sha256:4feced57ac8601cf6701a0d4488577fec031bd5ef70c53e8d0239a66eb829cf2
+  .claude/skills/fjson-api/references/examples.md: sha256:d541ed9446ebda1786d126aa5584945d3bd8031a2029bd1a87f285adcdd6b5e5
+  .claude/skills/fjson-api/references/preferred-patterns.md: sha256:b1ba1a28584dbc8e75108729985057bdda0c5d5df8f33d652d7cc7ac0c416ff6

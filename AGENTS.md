@@ -1,5 +1,7 @@
 # AGENTS.md — Alma.JsonApi (fjson-api)
 
+This repo ships Agent Skill for the `Alma.JsonApi` library. Compatible agents discover it automatically; see `.agents/skills/fjson-api/SKILL.md`.
+
 ## Project Purpose
 
 F# library (`Alma.JsonApi`) providing JSON:API types, request/response parsing, HTTP client helpers (GET/POST with tracing), and Giraffe-based tracing middleware for Felicity JSON:API servers. Used by Alma microservices that expose or consume JSON:API endpoints. Published as a NuGet package.
