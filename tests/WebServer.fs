@@ -40,7 +40,7 @@ type WebServer =
 [<RequireQualifiedAccess>]
 module WebServer =
     /// See https://github.com/giraffe-fsharp/Giraffe/blob/master/DOCUMENTATION.md#content-negotiation
-    type private CustomNegotiationConfig (baseConfig : INegotiationConfig) =
+    type private CustomNegotiationConfig (baseConfig: INegotiationConfig) =
         interface INegotiationConfig with
             member __.UnacceptableHandler =
                 baseConfig.UnacceptableHandler
